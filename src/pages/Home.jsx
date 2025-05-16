@@ -1,13 +1,50 @@
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowRightOnRectangleIcon } from "@heroicons/react/24/outline";
+import SolicitacaoCard from "../components/SolicitacaoCard";
 
 export default function Home() {
   const navigate = useNavigate();
+  const [solicitacoes, setSolicitacoes] = useState([]);
+  const [carregando, setCarregando] = useState(true);
+
+  const carregarSolicitacoes = async () => {
+    try {
+      setCarregando(true);
+      const res = await fetch("http://localhost:3000/complementos");
+      const dados = await res.json();
+      const pendentes = dados.filter((c) => c.status === "Pendente");
+      setSolicitacoes(pendentes);
+    } catch (err) {
+      console.error("Erro ao carregar solicitações:", err);
+      setCarregando(false);
+    }
+  };
+
+  const atualizarStatus = async (id, acao) => {
+    const rota = `http://localhost:3000/complementos/${id}/${acao}`;
+    const confirmacao = confirm(`Deseja realmente ${acao} esta solicitação?`);
+    if (!confirmacao) return;
+
+    try {
+      const res = await fetch(rota, { method: "PUT" });
+      if (!res.ok) throw new Error();
+      await carregarSolicitacoes();
+    } catch {
+      console.error("Erro ao atualizar status.");
+    }
+  };
 
   const handleLogout = () => {
     localStorage.removeItem("usuario");
     navigate("/");
   };
+
+  useEffect(() => {
+    carregarSolicitacoes();
+    const interval = setInterval(carregarSolicitacoes, 10000); // auto-refresh a cada 10s
+    return () => clearInterval(interval);
+  }, []);
 
   return (
     <div className="min-h-screen bg-gray-300 flex flex-col relative">
@@ -22,11 +59,24 @@ export default function Home() {
         </button>
       </div>
 
-      {/* Conteúdo Central */}
-      <div className="flex-1 flex items-center justify-center">
-        <p className="text-center text-lg text-gray-700">
-          Aguardando Novas Solicitações...
-        </p>
+      {/* Conteúdo */}
+      <div className="flex-1 overflow-y-auto py-4">
+        {carregando ? (
+          <p className="text-center text-gray-600">Carregando...</p>
+        ) : solicitacoes.length === 0 ? (
+          <p className="text-center text-lg text-gray-700">
+            Aguardando Novas Solicitações...
+          </p>
+        ) : (
+          solicitacoes.map((item) => (
+            <SolicitacaoCard
+              key={item.id}
+              complemento={item}
+              onAceitar={(id) => atualizarStatus(id, "aceitar")}
+              onRejeitar={(id) => atualizarStatus(id, "rejeitar")}
+            />
+          ))
+        )}
       </div>
 
       {/* Rodapé */}
