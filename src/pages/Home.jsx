@@ -8,19 +8,26 @@ export default function Home() {
   const [solicitacoes, setSolicitacoes] = useState([]);
   const [carregando, setCarregando] = useState(true);
 
+  // Carrega Solicitações
   const carregarSolicitacoes = async () => {
     try {
       setCarregando(true);
       const res = await fetch("http://localhost:3000/complementos");
       const dados = await res.json();
+
+      console.log("Complementos recebidos:", dados);
+
       const pendentes = dados.filter((c) => c.status === "Pendente");
       setSolicitacoes(pendentes);
     } catch (err) {
       console.error("Erro ao carregar solicitações:", err);
-      setCarregando(false);
+      alert("Erro ao carregar solicitações.");
+    } finally {
+      setCarregando(false); // Aqui Garante que a tela destrave mesmo com erro
     }
   };
 
+  // Atualiza Status das Solicitações
   const atualizarStatus = async (id, acao) => {
     const rota = `http://localhost:3000/complementos/${id}/${acao}`;
     const confirmacao = confirm(`Deseja realmente ${acao} esta solicitação?`);
