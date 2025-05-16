@@ -8,13 +8,11 @@ export default function Home() {
   const [solicitacoes, setSolicitacoes] = useState([]);
   const [carregando, setCarregando] = useState(true);
 
-  // Alerta ao receber novas solicitações
   const [idsAtuais, setIdsAtuais] = useState([]);
   const audio = new Audio("/alerta.mp3");
   audio.loop = false;
   audio.volume = 1;
 
-  // Carrega Solicitações
   const carregarSolicitacoes = async () => {
     try {
       setCarregando(true);
@@ -22,14 +20,11 @@ export default function Home() {
       const dados = await res.json();
 
       const pendentes = dados.filter((c) => c.status === "Pendente");
-
-      // Verifica se há novas solicitações
       const novosIds = pendentes.map((c) => c.id);
       const novos = novosIds.filter((id) => !idsAtuais.includes(id));
 
       if (novos.length > 0) {
         audio.play();
-        // Opcional: parar som após 4 segundos
         setTimeout(() => {
           audio.pause();
           audio.currentTime = 0;
@@ -46,7 +41,6 @@ export default function Home() {
     }
   };
 
-  // Atualiza Status das Solicitações
   const atualizarStatus = async (id, acao) => {
     const rota = `http://localhost:3000/complementos/${id}/${acao}`;
     const confirmacao = confirm(`Deseja realmente ${acao} esta solicitação?`);
@@ -68,7 +62,7 @@ export default function Home() {
 
   useEffect(() => {
     carregarSolicitacoes();
-    const interval = setInterval(carregarSolicitacoes, 10000); // auto-refresh a cada 10s
+    const interval = setInterval(carregarSolicitacoes, 10000);
     return () => clearInterval(interval);
   }, []);
 
@@ -98,7 +92,10 @@ export default function Home() {
             <SolicitacaoCard
               key={item.id}
               complemento={item}
-              onAceitar={(id) => atualizarStatus(id, "aceitar")}
+              onAceitar={(id) => {
+                const comp = solicitacoes.find((s) => s.id === id);
+                navigate("/acompanhar", { state: { complemento: comp } });
+              }}
               onRejeitar={(id) => atualizarStatus(id, "rejeitar")}
             />
           ))
