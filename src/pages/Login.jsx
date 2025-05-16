@@ -5,7 +5,12 @@ export default function Login() {
   const [senha, setSenha] = useState("");
 
   const handleLogin = () => {
-    alert(`Login com: ${usuario} / ${senha}`);
+    if (usuario.trim() && senha.trim()) {
+      localStorage.setItem("usuario", usuario);
+      window.location.href = "/home";
+    } else {
+      alert("Preencha usuário e senha");
+    }
   };
 
   return (
