@@ -8,6 +8,12 @@ export default function Home() {
   const [solicitacoes, setSolicitacoes] = useState([]);
   const [carregando, setCarregando] = useState(true);
 
+  // Alerta ao receber novas solicitações
+  const [idsAtuais, setIdsAtuais] = useState([]);
+  const audio = new Audio("/alerta.mp3");
+  audio.loop = false;
+  audio.volume = 1;
+
   // Carrega Solicitações
   const carregarSolicitacoes = async () => {
     try {
@@ -15,15 +21,28 @@ export default function Home() {
       const res = await fetch("http://localhost:3000/complementos");
       const dados = await res.json();
 
-      console.log("Complementos recebidos:", dados);
-
       const pendentes = dados.filter((c) => c.status === "Pendente");
+
+      // Verifica se há novas solicitações
+      const novosIds = pendentes.map((c) => c.id);
+      const novos = novosIds.filter((id) => !idsAtuais.includes(id));
+
+      if (novos.length > 0) {
+        audio.play();
+        // Opcional: parar som após 4 segundos
+        setTimeout(() => {
+          audio.pause();
+          audio.currentTime = 0;
+        }, 4000);
+      }
+
+      setIdsAtuais(novosIds);
       setSolicitacoes(pendentes);
     } catch (err) {
       console.error("Erro ao carregar solicitações:", err);
       alert("Erro ao carregar solicitações.");
     } finally {
-      setCarregando(false); // Aqui Garante que a tela destrave mesmo com erro
+      setCarregando(false);
     }
   };
 
