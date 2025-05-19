@@ -22,8 +22,8 @@ export default function Login() {
           <img src="/logo.png" alt="Logo" className="h-12" />
         </div>
 
-        <h1 className="text-lg font-bold text-blue-800 mb-6">
-          EASY <span className="text-blue-400">BALANCE</span>
+        <h1 className="text-xl font-bold" style={{ color: "#1d2b52" }}>
+          SYN SCALE
         </h1>
 
         {/* Campos de login */}
@@ -52,9 +52,12 @@ export default function Login() {
       </div>
 
       {/* Marca d’água */}
-      <div className="absolute bottom-4 right-4 text-sm font-bold text-blue-800">
-        EASY <span className="text-blue-400">BALANCE</span>
-      </div>
+      <span
+        className="absolute bottom-4 right-4 text-sm font-bold"
+        style={{ color: "#1d2b52" }}
+      >
+        SYN SCALE
+      </span>
     </div>
   );
 }

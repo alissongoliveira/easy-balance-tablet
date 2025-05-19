@@ -72,7 +72,9 @@ export default function Home() {
       <div className="bg-white h-12 flex items-center justify-between px-4 shadow">
         <div className="flex items-center gap-2">
           <img src="/logo.png" alt="Logo" className="h-6" />
-          <span className="font-bold text-xs text-blue-800">EASY BALANCE</span>
+          <span className="font-bold text-xs" style={{ color: "#1d2b52" }}>
+            SYN SCALE
+          </span>
         </div>
         <button onClick={handleLogout}>
           <ArrowRightOnRectangleIcon className="h-6 w-6 text-gray-700" />
@@ -103,9 +105,12 @@ export default function Home() {
       </div>
 
       {/* Rodapé */}
-      <div className="absolute bottom-4 right-4 text-sm font-bold text-blue-800">
-        EASY <span className="text-blue-400">BALANCE</span>
-      </div>
+      <span
+        className="absolute bottom-4 right-4 text-sm font-bold"
+        style={{ color: "#1d2b52" }}
+      >
+        SYN SCALE
+      </span>
     </div>
   );
 }
